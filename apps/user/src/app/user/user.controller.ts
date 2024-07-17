@@ -5,6 +5,7 @@ import {
   CreateUserRequest,
   GenericResponse,
   GetUserRequest,
+  MultipleUserResponse,
   UpdateUserRequest,
   UserResponse,
 } from '@app/common';
@@ -25,6 +26,12 @@ export class UserController {
     @Body() body: GetUserRequest,
   ): Promise<UserResponse> {
     return this.userService.getUserByUserName(req.userId, body.username);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('getUsers')
+  async getUsers(@Req() req): Promise<MultipleUserResponse> {
+    return this.userService.getUsers(req.userId!);
   }
 
   @UseGuards(AuthGuard)

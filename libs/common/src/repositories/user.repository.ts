@@ -123,4 +123,19 @@ export class UserRepository {
       throw err;
     }
   }
+
+  async findUnblockedUsers(blockedIds: Types.ObjectId[]): Promise<Array<User>> {
+    try {
+      return this.userModel
+        .find({
+          _id: { $nin: blockedIds },
+        })
+        .lean();
+    } catch (err) {
+      console.log(
+        `UserRepository.findUnblockedUsers - Err : ${JSON.stringify(err)}`,
+      );
+      throw err;
+    }
+  }
 }

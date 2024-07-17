@@ -16,6 +16,7 @@ import {
   USERNAME_UNAVAILABLE,
   CREATE_USER_ERROR,
   CREATE_USER_SUCCESS,
+  MultipleUserResponse,
 } from '@app/common';
 import { Injectable } from '@nestjs/common';
 
@@ -105,6 +106,22 @@ export class UserService {
     } catch (err) {
       console.log(`UserService.createUser - Err : ${JSON.stringify(err)}`);
       return UserResponse.error(CREATE_USER_ERROR);
+    }
+  }
+
+  async getUsers(userId: string): Promise<MultipleUserResponse> {
+    try {
+      const user = await this.userRepository.findUserById(userId);
+      if (!user) {
+        return MultipleUserResponse.error(UNAUTHORIZED);
+      }
+      const response = await this.userRepository.findUnblockedUsers(
+        user.blockedUsers,
+      );
+      return MultipleUserResponse.success(GET_USER_SUCCESS, response);
+    } catch (err) {
+      console.log(`UserService.getUsers - Err : ${JSON.stringify(err)}`);
+      return MultipleUserResponse.error(GET_USER_ERROR);
     }
   }
 }

@@ -49,7 +49,7 @@ export class UserRepository {
       if (name) updates['name'] = name;
       if (surname) updates['surname'] = surname;
       if (birthdate) updates['birthdate'] = birthdate;
-      return this.userModel
+      const updateResult = await this.userModel
         .updateOne(
           {
             _id: new Types.ObjectId(userId),
@@ -57,6 +57,15 @@ export class UserRepository {
           updates,
         )
         .lean();
+      if (updateResult.modifiedCount == 1) {
+        return this.userModel
+          .findOne({
+            _id: new Types.ObjectId(userId),
+          })
+          .lean();
+      } else {
+        throw new Error('Unable to update user');
+      }
     } catch (err) {
       console.log(`UserRepository.updateUser - Err : ${JSON.stringify(err)}`);
       throw err;
